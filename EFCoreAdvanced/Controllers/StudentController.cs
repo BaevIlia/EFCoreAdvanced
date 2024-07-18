@@ -10,7 +10,7 @@ namespace EFCoreAdvanced.Controllers
 
         public StudentController(ApplicationDbContext dbContext)
         {
-                _dbContext = dbContext;
+            _dbContext = dbContext;
         }
 
         [HttpPost("register")]
@@ -18,7 +18,7 @@ namespace EFCoreAdvanced.Controllers
             string firstName,
             string lastName,
             long favouriteCourseId,
-            Grade favouriteCourseGrade) 
+            Grade favouriteCourseGrade)
         {
             var nameResult = Name.Create(firstName, lastName);
             if (nameResult.IsFailure)
@@ -26,7 +26,7 @@ namespace EFCoreAdvanced.Controllers
 
             var course = await _dbContext.Courses.FindAsync(favouriteCourseId);
 
-           
+
 
             var student = new Student(nameResult.Value, course);
 
@@ -36,7 +36,7 @@ namespace EFCoreAdvanced.Controllers
                 return BadRequest();
             student.Enrollments.Add(enrollment);
 
-           
+
 
             _dbContext.Students.Attach(student);
 
@@ -47,6 +47,36 @@ namespace EFCoreAdvanced.Controllers
             return Ok("Ok");
         }
 
-       
+        [HttpPut("edit")]
+        public async Task<ActionResult<string>> EditPersonalInfo(
+            long studentId,
+            string firstName,
+            string lastName,
+            long favouriteCourseId) 
+        {
+            var student = await _dbContext.Students.FindAsync(studentId);
+
+            if (student is null)
+                return BadRequest("Student not found");
+
+            var nameResult = Name.Create(firstName, lastName);
+
+            if (nameResult.IsFailure)
+                return BadRequest(nameResult.Error);
+
+         
+
+            var course = await _dbContext.Courses.FindAsync(favouriteCourseId);
+
+            if (course is null)
+                return BadRequest("Course not found");
+
+            student.Name = nameResult.Value;
+            student.FavouriteCourse = course;
+
+            await _dbContext.SaveChangesAsync();
+
+            return Ok("Ok");
+        }
     }
 }
