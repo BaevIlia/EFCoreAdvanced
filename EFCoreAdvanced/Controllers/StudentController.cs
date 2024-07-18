@@ -11,12 +11,10 @@ namespace EFCoreAdvanced.Controllers
         private readonly ApplicationDbContext _dbContext;
         private readonly StudentRepository _studentRepository;
         private readonly CourseRepository _courseRepository;
-        public StudentController(ApplicationDbContext dbContext)
+       
+        public StudentController(ApplicationDbContext dbContext,StudentRepository studentRepository, CourseRepository courseRepository)
         {
             _dbContext = dbContext;
-        }
-        public StudentController(StudentRepository studentRepository, CourseRepository courseRepository)
-        {
             _studentRepository = studentRepository;
             _courseRepository = courseRepository;
         }
