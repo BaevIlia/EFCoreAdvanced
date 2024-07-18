@@ -10,6 +10,8 @@ namespace EFCoreAdvanced.Entities
 
         public Student Student { get;}
 
+        private Enrollment() { }
+
         public Enrollment(Grade grade, Course course, Student student)
         {
             Grade = grade;

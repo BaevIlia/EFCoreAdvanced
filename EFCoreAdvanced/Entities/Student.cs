@@ -10,8 +10,10 @@ namespace EFCoreAdvanced.Entities
 
         public long? CourseId { get; set; }
 
-        public List<Enrollment> Enrollments { get; set; } = null;
+        public List<Enrollment> Enrollments { get; set; } = [];
 
+
+        private Student() { }
         public Student(Name name, Course? favouriteCourse )
         {
             Name = name;

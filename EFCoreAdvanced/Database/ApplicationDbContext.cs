@@ -11,10 +11,7 @@ namespace EFCoreAdvanced.Database
         {
             _configuration = configuration;
         }
-        public ApplicationDbContext(DbContextOptions options) : base(options)
-        {
 
-        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

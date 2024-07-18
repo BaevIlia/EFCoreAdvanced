@@ -22,7 +22,7 @@ namespace EFCoreAdvanced.Entities
             return course;
         }
 
-
+        private Course() { }
         private Course(long id, string name)
             : base(id) 
         {
