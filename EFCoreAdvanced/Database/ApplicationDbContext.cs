@@ -12,6 +12,9 @@ namespace EFCoreAdvanced.Database
             _configuration = configuration;
         }
 
+        public DbSet<Course> Courses { get; set; }
+
+        public DbSet<Student> Students { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
