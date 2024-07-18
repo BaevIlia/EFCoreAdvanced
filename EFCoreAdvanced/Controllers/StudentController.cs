@@ -1,6 +1,7 @@
 ﻿using EFCoreAdvanced.Database;
 using EFCoreAdvanced.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EFCoreAdvanced.Controllers
 {
@@ -74,6 +75,40 @@ namespace EFCoreAdvanced.Controllers
             student.Name = nameResult.Value;
             student.FavouriteCourse = course;
 
+            await _dbContext.SaveChangesAsync();
+
+            return Ok("Ok");
+        }
+
+        [HttpPut("enroll")]
+        public async Task<ActionResult<string>> EnrollStudent(
+            long studentId,
+            long courseId,
+            Grade grade) 
+        {
+            var student = await _dbContext.Students
+                .Include(s => s.Enrollments)
+                .ThenInclude(e => e.Course)
+                .Include(s => s.FavouriteCourse)
+                .FirstOrDefaultAsync(s => s.Id == studentId);
+
+            if (student is null)
+                return BadRequest("Student not found");
+
+
+            var course = await _dbContext.Courses.FindAsync(courseId);
+
+            if (course is null)
+                return BadRequest("Course not found");
+
+            var enrollment = new Enrollment(grade: grade, course: course, student: student);
+
+            if (student.Enrollments.Any(e => e.Course == course))
+            {
+                return BadRequest("Enrollment already exists");
+
+            }
+            student.Enrollments.Add(enrollment);
             await _dbContext.SaveChangesAsync();
 
             return Ok("Ok");
