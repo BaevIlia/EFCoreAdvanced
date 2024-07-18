@@ -36,6 +36,8 @@ namespace EFCoreAdvanced.Controllers
 
             var student = new Student(nameResult.Value, course);
 
+            _dbContext.Students.Attach(student);
+
             var enrollment = new Enrollment(favouriteCourseGrade, course, student);
 
             if (course is null)
@@ -44,7 +46,6 @@ namespace EFCoreAdvanced.Controllers
 
 
 
-            _dbContext.Students.Attach(student);
 
             var entries = _dbContext.ChangeTracker.Entries();
 
@@ -133,6 +134,8 @@ namespace EFCoreAdvanced.Controllers
                 return BadRequest("No enrollment");
 
             studentResult.Value.Enrollments.Remove(enrollment);
+
+           await _dbContext.SaveChangesAsync();
 
             return Ok("Ok");
         }

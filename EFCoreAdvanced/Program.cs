@@ -1,4 +1,5 @@
 using EFCoreAdvanced.Database;
+using EFCoreAdvanced.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace EFCoreAdvanced
@@ -13,6 +14,9 @@ namespace EFCoreAdvanced
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<ApplicationDbContext>();
+
+            builder.Services.AddScoped<StudentRepository>();
+            builder.Services.AddScoped<CourseRepository>();
                
 
             var app = builder.Build();

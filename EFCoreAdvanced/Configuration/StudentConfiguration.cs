@@ -1,7 +1,6 @@
 ﻿using EFCoreAdvanced.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection.Emit;
 
 namespace EFCoreAdvanced.Configuration
 {
