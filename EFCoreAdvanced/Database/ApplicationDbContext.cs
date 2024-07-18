@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EFCoreAdvanced.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace EFCoreAdvanced.Database
 {
@@ -19,6 +20,16 @@ namespace EFCoreAdvanced.Database
             optionsBuilder.UseNpgsql(_configuration.GetConnectionString("Database"))
                 .UseLoggerFactory(CreateLoggerFactory())
                 .EnableSensitiveDataLogging();
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Student>(studentBuilder =>
+            {
+                studentBuilder.ToTable("Students").HasKey(s => s.Id);
+                studentBuilder.Property(s=>s.Id).HasColumnName("StudentID");
+          
+            });
         }
 
         public ILoggerFactory CreateLoggerFactory() =>
