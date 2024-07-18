@@ -26,30 +26,46 @@ namespace EFCoreAdvanced.Controllers
             long favouriteCourseId,
             Grade favouriteCourseGrade)
         {
-            var nameResult = Name.Create(firstName, lastName);
-            if (nameResult.IsFailure)
-                return BadRequest(nameResult.Error);
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
-            var course = await _dbContext.Courses.FindAsync(favouriteCourseId);
+            try
+            {
+                var nameResult = Name.Create(firstName, lastName);
+                if (nameResult.IsFailure)
+                    return BadRequest(nameResult.Error);
+
+                var course = await _dbContext.Courses.FindAsync(favouriteCourseId);
 
 
 
-            var student = new Student(nameResult.Value, course);
+                var student = new Student(nameResult.Value, course);
 
-            _dbContext.Students.Attach(student);
+                _dbContext.Students.Attach(student);
+                await _dbContext.SaveChangesAsync();
 
-            var enrollment = new Enrollment(favouriteCourseGrade, course, student);
+                var enrollment = new Enrollment(favouriteCourseGrade, course, student);
 
-            if (course is null)
-                return BadRequest();
-            student.Enrollments.Add(enrollment);
+                if (course is null)
+                    return BadRequest();
+                student.Enrollments.Add(enrollment);
+                await _dbContext.SaveChangesAsync();
 
+               await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+            }
+
+          
+
+           
 
 
 
             var entries = _dbContext.ChangeTracker.Entries();
 
-            await _dbContext.SaveChangesAsync();
+    
 
             return Ok("Ok");
         }
