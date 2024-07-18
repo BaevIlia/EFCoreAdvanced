@@ -1,5 +1,6 @@
 ﻿using EFCoreAdvanced.Database;
 using EFCoreAdvanced.Entities;
+using EFCoreAdvanced.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,10 +9,14 @@ namespace EFCoreAdvanced.Controllers
     public class StudentController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
-
+        private readonly StudentRepository _studentRepository;
         public StudentController(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
+        }
+        public StudentController(StudentRepository studentRepository)
+        {
+                _studentRepository = studentRepository;
         }
 
         [HttpPost("register")]
@@ -86,14 +91,7 @@ namespace EFCoreAdvanced.Controllers
             long courseId,
             Grade grade) 
         {
-            var student = await _dbContext.Students
-                .Include(s => s.Enrollments)
-                .ThenInclude(e => e.Course)
-                .Include(s => s.FavouriteCourse)
-                .FirstOrDefaultAsync(s => s.Id == studentId);
-
-            if (student is null)
-                return BadRequest("Student not found");
+            var studentResult = await _studentRepository.GetById(studentId);
 
 
             var course = await _dbContext.Courses.FindAsync(courseId);
@@ -101,14 +99,13 @@ namespace EFCoreAdvanced.Controllers
             if (course is null)
                 return BadRequest("Course not found");
 
-            var enrollment = new Enrollment(grade: grade, course: course, student: student);
+            var enrollment = new Enrollment(grade: grade, course: course, student: studentResult.Value);
 
-            if (student.Enrollments.Any(e => e.Course == course))
+            if (studentResult.Value.Enrollments.Any(e => e.Course == course))
             {
                 return BadRequest("Enrollment already exists");
 
             }
-            student.Enrollments.Add(enrollment);
             await _dbContext.SaveChangesAsync();
 
             return Ok("Ok");
