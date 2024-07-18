@@ -7,7 +7,7 @@ namespace EFCoreAdvanced.Entities
         public static readonly Course Math = new(1, "Math");
         public static readonly Course Chemistry = new(2, "Chemistry");
 
-        public static readonly Course[] AllCourses = { Math, Chemistry };
+        public static readonly Course[] AllCourses = [Math, Chemistry];
 
         public string Name { get; }
 

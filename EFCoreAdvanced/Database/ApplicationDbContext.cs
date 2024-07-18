@@ -33,9 +33,9 @@ namespace EFCoreAdvanced.Database
             {
                 courseBuilder.ToTable("Courses").HasKey(c => c.Id);
                 courseBuilder.Property(c => c.Id).HasColumnName("CourseID");
-                courseBuilder.Property(c => c.Name).HasMaxLength(100); 
-            
+                courseBuilder.Property(c => c.Name).HasMaxLength(100);
 
+                courseBuilder.HasData(Course.Math, Course.Chemistry);
             });
 
             modelBuilder.Entity<Enrollment>(enrollmentBuilder =>
