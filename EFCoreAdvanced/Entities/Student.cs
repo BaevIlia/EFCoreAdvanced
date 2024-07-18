@@ -8,7 +8,6 @@ namespace EFCoreAdvanced.Entities
 
         public Course? FavouriteCourse { get; set; }
 
-        public long? CourseId { get; set; }
 
         public List<Enrollment> Enrollments { get; set; } = [];
 

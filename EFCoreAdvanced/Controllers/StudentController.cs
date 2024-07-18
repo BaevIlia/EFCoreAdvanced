@@ -24,21 +24,29 @@ namespace EFCoreAdvanced.Controllers
             if (nameResult.IsFailure)
                 return BadRequest(nameResult.Error);
 
-            var courseResult = Course.FromId(favouriteCourseId);
-            if (courseResult.IsFailure)
-                return BadRequest(courseResult.Error);
+            var course = await _dbContext.Courses.FindAsync(favouriteCourseId);
 
-            var student = new Student(nameResult.Value, courseResult.Value);
+           
 
-            var enrollment = new Enrollment(favouriteCourseGrade, courseResult.Value, student);
+            var student = new Student(nameResult.Value, course);
 
+            var enrollment = new Enrollment(favouriteCourseGrade, course, student);
+
+            if (course is null)
+                return BadRequest();
             student.Enrollments.Add(enrollment);
 
-            _dbContext.Students.Add(student);
+           
 
-            _dbContext.SaveChangesAsync();
+            _dbContext.Students.Attach(student);
+
+            var entries = _dbContext.ChangeTracker.Entries();
+
+            await _dbContext.SaveChangesAsync();
 
             return Ok("Ok");
         }
+
+       
     }
 }
