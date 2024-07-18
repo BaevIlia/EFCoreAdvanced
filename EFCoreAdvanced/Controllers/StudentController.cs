@@ -10,13 +10,15 @@ namespace EFCoreAdvanced.Controllers
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly StudentRepository _studentRepository;
+        private readonly CourseRepository _courseRepository;
         public StudentController(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }
-        public StudentController(StudentRepository studentRepository)
+        public StudentController(StudentRepository studentRepository, CourseRepository courseRepository)
         {
-                _studentRepository = studentRepository;
+            _studentRepository = studentRepository;
+            _courseRepository = courseRepository;
         }
 
         [HttpPost("register")]
@@ -58,7 +60,7 @@ namespace EFCoreAdvanced.Controllers
             long studentId,
             string firstName,
             string lastName,
-            long favouriteCourseId) 
+            long favouriteCourseId)
         {
             var student = await _dbContext.Students.FindAsync(studentId);
 
@@ -70,7 +72,7 @@ namespace EFCoreAdvanced.Controllers
             if (nameResult.IsFailure)
                 return BadRequest(nameResult.Error);
 
-         
+
 
             var course = await _dbContext.Courses.FindAsync(favouriteCourseId);
 
@@ -89,7 +91,7 @@ namespace EFCoreAdvanced.Controllers
         public async Task<ActionResult<string>> EnrollStudent(
             long studentId,
             long courseId,
-            Grade grade) 
+            Grade grade)
         {
             var studentResult = await _studentRepository.GetById(studentId);
 
@@ -107,6 +109,32 @@ namespace EFCoreAdvanced.Controllers
 
             }
             await _dbContext.SaveChangesAsync();
+
+            return Ok("Ok");
+        }
+
+        [HttpPut("disenroll")]
+        public async Task<ActionResult<string>> DisenrollStudent(
+            long studentId,
+            long courseId)
+        {
+            var studentResult = await _studentRepository.GetById(studentId);
+
+            if (studentResult.IsFailure)
+                return BadRequest(studentResult.Error);
+
+            var courseResult = await _courseRepository.GetCourseById(courseId);
+
+            if (courseResult.IsFailure)
+                return BadRequest("Course not found");
+
+            var enrollment = studentResult.Value.Enrollments
+                .FirstOrDefault(c => c.Course == courseResult.Value);
+
+            if (enrollment is null)
+                return BadRequest("No enrollment");
+
+            studentResult.Value.Enrollments.Remove(enrollment);
 
             return Ok("Ok");
         }
