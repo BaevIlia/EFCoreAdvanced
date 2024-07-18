@@ -1,4 +1,5 @@
-﻿using EFCoreAdvanced.Entities;
+﻿using EFCoreAdvanced.Configuration;
+using EFCoreAdvanced.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace EFCoreAdvanced.Database
@@ -24,11 +25,31 @@ namespace EFCoreAdvanced.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Student>(studentBuilder =>
+            //Конфигурации отдельно
+           // modelBuilder.ApplyConfiguration(new StudentConfiguration());
+
+            //Все конфигурации из сборки
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
+
+            modelBuilder.Entity<Course>(courseBuilder =>
             {
-                studentBuilder.ToTable("Students").HasKey(s => s.Id);
-                studentBuilder.Property(s=>s.Id).HasColumnName("StudentID");
-          
+                courseBuilder.ToTable("Courses").HasKey(c => c.Id);
+                courseBuilder.Property(c => c.Id).HasColumnName("CourseID");
+                courseBuilder.Property(c => c.Name).HasMaxLength(100); 
+            
+
+            });
+
+            modelBuilder.Entity<Enrollment>(enrollmentBuilder =>
+            {
+                enrollmentBuilder.ToTable("Enrollments").HasKey(e => e.Id);
+                enrollmentBuilder.Property(c => c.Id).HasColumnName("EnrollmentID");
+                enrollmentBuilder.HasOne(s => s.Student).WithMany(e => e.Enrollments);
+                enrollmentBuilder.HasOne(c => c.Course).WithMany();
+                enrollmentBuilder.Property(e => e.Grade);
+
+
             });
         }
 
