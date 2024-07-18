@@ -1,4 +1,5 @@
 using EFCoreAdvanced.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace EFCoreAdvanced
 {
@@ -11,7 +12,12 @@ namespace EFCoreAdvanced
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddScoped<ApplicationDbContext>();
+            builder.Services.AddDbContext<ApplicationDbContext>(
+                options =>
+                {
+                    options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
+                });
+
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment()) 
