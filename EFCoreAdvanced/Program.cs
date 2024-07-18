@@ -12,11 +12,8 @@ namespace EFCoreAdvanced
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddDbContext<ApplicationDbContext>(
-                options =>
-                {
-                    //options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
-                });
+            builder.Services.AddDbContext<ApplicationDbContext>();
+               
 
             var app = builder.Build();
 

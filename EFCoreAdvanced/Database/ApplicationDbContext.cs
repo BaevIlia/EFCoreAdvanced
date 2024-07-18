@@ -7,7 +7,7 @@ namespace EFCoreAdvanced.Database
         private readonly IConfiguration _configuration;
         public ApplicationDbContext(IConfiguration configuration)
         {
-            _configuration= configuration;
+            _configuration = configuration;
         }
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
@@ -17,7 +17,11 @@ namespace EFCoreAdvanced.Database
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseNpgsql(_configuration.GetConnectionString("Database"))
+                .UseLoggerFactory(CreateLoggerFactory())
                 .EnableSensitiveDataLogging();
         }
+
+        public ILoggerFactory CreateLoggerFactory() =>
+            LoggerFactory.Create(builder => { builder.AddConsole(); });
     }
 }
